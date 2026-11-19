@@ -1,0 +1,2745 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Dashboard บัญชีรายการยาของร้านยาจำลอง" />
+    <title>ภาพรวมบัญชียา | Medstock</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172d27;
+        --muted: #74827c;
+        --green: #1b7155;
+        --green-dark: #124c3c;
+        --green-light: #e9f4ee;
+        --line: #e5ebe7;
+        --paper: #ffffff;
+        --canvas: #f3f6f4;
+        --amber: #d28b36;
+        --amber-soft: #fff4e2;
+        --shadow: 0 12px 36px rgba(33, 61, 49, 0.055);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        min-width: 0;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--ink);
+        font-family: "IBM Plex Sans Thai", "Leelawadee UI", Tahoma, sans-serif;
+        background: var(--canvas);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 238px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      .sidebar {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 25px 17px 19px;
+        border-right: 1px solid #e6ece8;
+        background: #fbfcfb;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 2px 8px 28px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        color: #fff;
+        background: var(--green);
+        box-shadow: 0 5px 12px rgba(27, 113, 85, 0.18);
+      }
+      .brand-mark svg {
+        width: 21px;
+        height: 21px;
+      }
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+      .brand-text small {
+        color: #92a099;
+        font:
+          700 9px/1.3 Arial,
+          sans-serif;
+        letter-spacing: 0.12em;
+      }
+      .nav-label {
+        margin: 5px 10px 9px;
+        color: #a0aba5;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+      }
+      .nav {
+        display: grid;
+        gap: 5px;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-height: 41px;
+        padding: 0 11px;
+        border-radius: 10px;
+        color: #718078;
+        font-size: 12px;
+        text-decoration: none;
+        transition: 0.18s ease;
+      }
+      .nav-link svg {
+        flex: 0 0 auto;
+        width: 17px;
+        height: 17px;
+      }
+      .nav-link:hover {
+        color: var(--green-dark);
+        background: #f0f5f2;
+      }
+      .nav-link.active {
+        color: var(--green-dark);
+        background: var(--green-light);
+        font-weight: 700;
+      }
+      .nav-count {
+        margin-left: auto;
+        padding: 2px 7px;
+        border-radius: 999px;
+        color: #668075;
+        background: #dcece3;
+        font:
+          700 10px Arial,
+          sans-serif;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+      }
+      .source-card {
+        padding: 13px 13px 12px;
+        border: 1px solid #e7eee9;
+        border-radius: 13px;
+        background: #f5f8f6;
+      }
+      .source-heading {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 6px;
+        color: #53665c;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .source-heading svg {
+        width: 14px;
+        height: 14px;
+        color: var(--green);
+      }
+      .source-card p {
+        margin: 0;
+        color: #89958f;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+      .sidebar-foot {
+        margin: 14px 8px 0;
+        color: #a2ada7;
+        font:
+          10px Arial,
+          sans-serif;
+      }
+
+      .main {
+        min-width: 0;
+        padding: 0 clamp(20px, 3.5vw, 52px) 38px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+        border-bottom: 1px solid #e5ebe7;
+      }
+      .crumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #9aa69f;
+        font-size: 11px;
+      }
+      .crumbs strong {
+        color: #53645c;
+        font-weight: 600;
+      }
+      .crumbs svg {
+        width: 12px;
+        height: 12px;
+      }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .data-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #84928a;
+        font-size: 10px;
+      }
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #d6a546;
+      }
+      .status-dot.ready {
+        background: #39a776;
+        box-shadow: 0 0 0 3px rgba(57, 167, 118, 0.12);
+      }
+      .import-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 0 12px;
+        border: 1px solid #dfe7e2;
+        border-radius: 9px;
+        color: #51675d;
+        background: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        transition: 0.18s ease;
+      }
+      .import-button:hover {
+        border-color: #b8d3c3;
+        color: var(--green-dark);
+        background: #fbfdfb;
+      }
+      .import-button svg {
+        width: 15px;
+        height: 15px;
+      }
+      .import-input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+      .import-input:focus-visible + .import-button {
+        outline: 3px solid rgba(45, 132, 97, 0.25);
+        outline-offset: 2px;
+      }
+
+      .page-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 29px 0 22px;
+      }
+      .page-kicker {
+        margin: 0 0 6px;
+        color: var(--green);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+      }
+      h1 {
+        margin: 0;
+        color: #18352b;
+        font-size: clamp(24px, 3vw, 32px);
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        line-height: 1.35;
+      }
+      .page-subtitle {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.65;
+      }
+      .demo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex: 0 0 auto;
+        padding: 7px 10px;
+        border: 1px solid #f1e1c5;
+        border-radius: 8px;
+        color: #986a24;
+        background: #fff9ee;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .demo-badge svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .load-notice {
+        display: none;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding: 11px 13px;
+        border: 1px solid #f0d9b6;
+        border-radius: 11px;
+        color: #835d24;
+        background: #fff9ef;
+        font-size: 11px;
+        line-height: 1.65;
+      }
+      .load-notice.show {
+        display: flex;
+      }
+      .load-notice svg {
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+        margin-top: 1px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .metric {
+        position: relative;
+        min-width: 0;
+        padding: 17px 17px 16px;
+        overflow: hidden;
+        border: 1px solid #e7ece9;
+        border-radius: 14px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+      .metric-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 9px;
+      }
+      .metric-label {
+        color: #829089;
+        font-size: 11px;
+        font-weight: 500;
+      }
+      .metric-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        color: var(--green);
+        background: #edf6f0;
+      }
+      .metric-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .metric-value {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 12px;
+        color: #20382f;
+        font:
+          700 29px/1 "Manrope",
+          "IBM Plex Sans Thai",
+          sans-serif;
+        letter-spacing: -0.06em;
+      }
+      .metric-value small {
+        color: #8a9790;
+        font:
+          500 10px "IBM Plex Sans Thai",
+          sans-serif;
+        letter-spacing: 0;
+      }
+      .metric-foot {
+        margin-top: 7px;
+        color: #a0aaa4;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .insights {
+        display: grid;
+        grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+        gap: 15px;
+        margin-top: 16px;
+      }
+      .panel {
+        min-width: 0;
+        border: 1px solid #e7ece9;
+        border-radius: 14px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 17px 18px 12px;
+      }
+      .panel-title {
+        margin: 0;
+        color: #2a4037;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .panel-subtitle {
+        margin: 3px 0 0;
+        color: #98a39d;
+        font-size: 10px;
+        line-height: 1.55;
+      }
+      .panel-chip {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        border-radius: 7px;
+        color: #6c8477;
+        background: #eff5f1;
+        font-size: 9px;
+        font-weight: 600;
+      }
+      .category-chart {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+        padding: 1px 18px 18px;
+      }
+      .chart-empty {
+        margin: 0;
+        padding: 18px 0;
+        color: #87948c;
+        font-size: 11px;
+        text-align: center;
+      }
+      .bar-chart-row {
+        display: grid;
+        gap: 5px;
+        width: 100%;
+        min-height: 40px;
+        padding: 3px 0;
+        border: 0;
+        color: inherit;
+        background: transparent;
+        text-align: left;
+      }
+      .bar-chart-row:focus-visible,
+      .donut-legend-row:focus-visible {
+        outline: 2px solid #75b294;
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      .bar-chart-row:hover .bar-label,
+      .bar-chart-row.is-selected .bar-label,
+      .donut-legend-row:hover .donut-legend-name,
+      .donut-legend-row.is-selected .donut-legend-name {
+        color: var(--green-dark);
+        font-weight: 700;
+      }
+      .bar-chart-meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .bar-label {
+        min-width: 0;
+        color: #687a71;
+        font-size: 11px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+      .bar-count {
+        flex: 0 0 auto;
+        color: #52685d;
+        font: 700 10px Arial, sans-serif;
+      }
+      .bar-track {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #f0f3f1;
+      }
+      .bar-fill {
+        height: 100%;
+        min-width: 2px;
+        border-radius: inherit;
+        background: #58a982;
+        transition: width 0.35s ease, background-color 0.2s ease;
+      }
+      .bar-chart-row.is-selected .bar-fill {
+        background: var(--green-dark);
+      }
+      .side-panels {
+        display: grid;
+        grid-template-rows: 1fr auto;
+        gap: 15px;
+      }
+      .form-chart {
+        display: grid;
+        grid-template-columns: minmax(122px, 0.9fr) minmax(0, 1.1fr);
+        align-items: center;
+        gap: 8px;
+        min-height: 205px;
+        padding: 0 15px 17px;
+      }
+      .donut-chart svg {
+        display: block;
+        width: 100%;
+        height: 180px;
+        overflow: visible;
+      }
+      .donut-ring {
+        fill: none;
+        stroke-width: 22;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+      .donut-total {
+        fill: #29463a;
+        font-family: "Manrope", "IBM Plex Sans Thai", sans-serif;
+        font-size: 21px;
+        font-weight: 700;
+        text-anchor: middle;
+      }
+      .donut-caption {
+        fill: #94a29a;
+        font-family: "IBM Plex Sans Thai", Tahoma, sans-serif;
+        font-size: 10px;
+        text-anchor: middle;
+      }
+      .donut-legend {
+        display: grid;
+        align-content: center;
+        gap: 4px;
+        min-width: 0;
+      }
+      .donut-legend-row {
+        display: grid;
+        grid-template-columns: 8px minmax(0, 1fr);
+        align-items: center;
+        gap: 7px;
+        width: 100%;
+        min-height: 34px;
+        padding: 3px 0;
+        border: 0;
+        color: inherit;
+        background: transparent;
+        text-align: left;
+      }
+      .donut-legend-copy {
+        display: grid;
+        min-width: 0;
+        gap: 2px;
+        min-width: 0;
+        color: #687a71;
+        font-size: 10px;
+      }
+      .donut-legend-swatch {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .donut-legend-name {
+        color: #687a71;
+        font-size: 10px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+      }
+      .donut-legend-value {
+        color: #84938b;
+        font: 10px/1.4 Arial, "IBM Plex Sans Thai", sans-serif;
+      }
+      .threshold-panel {
+        padding: 16px 18px 17px;
+        color: #f3f8f4;
+        border: 0;
+        background: var(--green-dark);
+        box-shadow: 0 12px 32px rgba(18, 76, 60, 0.13);
+      }
+      .threshold-title {
+        margin: 0;
+        color: rgba(244, 250, 245, 0.77);
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .threshold-number {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin: 9px 0 4px;
+        color: #fff;
+        font:
+          700 31px/1 "Manrope",
+          sans-serif;
+        letter-spacing: -0.07em;
+      }
+      .threshold-number small {
+        color: rgba(255, 255, 255, 0.57);
+        font:
+          500 10px "IBM Plex Sans Thai",
+          sans-serif;
+        letter-spacing: 0;
+      }
+      .threshold-note {
+        margin: 0;
+        color: rgba(239, 247, 241, 0.61);
+        font-size: 10px;
+        line-height: 1.6;
+      }
+      .threshold-range {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 13px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.13);
+        color: rgba(239, 247, 241, 0.62);
+        font-size: 9px;
+      }
+      .threshold-range strong {
+        color: #e9f4ec;
+        font:
+          600 10px "Manrope",
+          sans-serif;
+      }
+
+      .catalog {
+        margin-top: 16px;
+        overflow: hidden;
+      }
+      .catalog-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 17px 18px 13px;
+      }
+      .catalog-count {
+        flex: 0 0 auto;
+        padding: 5px 8px;
+        border-radius: 7px;
+        color: #728078;
+        background: #f3f6f4;
+        font-size: 10px;
+      }
+      .toolbar {
+        display: grid;
+        grid-template-columns: minmax(170px, 1.7fr) repeat(
+            3,
+            minmax(125px, 1fr)
+          );
+        gap: 9px;
+        padding: 0 18px 14px;
+      }
+      .search-wrap {
+        position: relative;
+        min-width: 0;
+      }
+      .search-wrap svg {
+        position: absolute;
+        top: 50%;
+        left: 11px;
+        width: 15px;
+        height: 15px;
+        color: #9aa79f;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+      .control {
+        width: 100%;
+        height: 36px;
+        padding: 0 10px;
+        border: 1px solid #e3e9e5;
+        border-radius: 8px;
+        outline: 0;
+        color: #53675d;
+        background: #fff;
+        font-size: 10px;
+      }
+      .search-wrap .control {
+        padding-left: 34px;
+      }
+      .control:focus {
+        border-color: #75b294;
+        box-shadow: 0 0 0 3px rgba(65, 147, 105, 0.1);
+      }
+      .control::placeholder {
+        color: #a8b2ac;
+      }
+      .table-scroll {
+        width: 100%;
+        overflow-x: auto;
+        border-top: 1px solid #edf0ee;
+      }
+      table {
+        width: 100%;
+        min-width: 860px;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      thead {
+        background: #fafcfb;
+      }
+      th {
+        padding: 10px 12px;
+        color: #97a29c;
+        font-size: 9px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      th:first-child,
+      td:first-child {
+        padding-left: 18px;
+      }
+      td {
+        padding: 11px 12px;
+        border-top: 1px solid #f0f3f1;
+        color: #66776e;
+        font-size: 10px;
+        vertical-align: middle;
+      }
+      tbody tr {
+        transition: background 0.15s ease;
+      }
+      tbody tr:hover {
+        background: #fbfdfb;
+      }
+      .sku {
+        color: #527263;
+        font:
+          700 10px "Manrope",
+          monospace;
+        white-space: nowrap;
+      }
+      .drug-name {
+        color: #2d4339;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .drug-strength {
+        display: block;
+        margin-top: 2px;
+        color: #9aa69f;
+        font:
+          9px "Manrope",
+          Arial,
+          sans-serif;
+      }
+      .category-tag {
+        display: inline-block;
+        max-width: 178px;
+        padding: 4px 7px;
+        overflow: hidden;
+        border-radius: 6px;
+        color: #5e7669;
+        background: #eff5f1;
+        font-size: 9px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .atc {
+        color: #88968e;
+        font:
+          10px "Manrope",
+          monospace;
+      }
+      .reorder {
+        color: #344b40;
+        font:
+          700 10px "Manrope",
+          sans-serif;
+        text-align: right;
+      }
+      .empty-state {
+        display: none;
+        padding: 34px 18px;
+        color: #87948c;
+        text-align: center;
+        font-size: 11px;
+      }
+      .table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 18px;
+        border-top: 1px solid #edf0ee;
+        color: #94a098;
+        font-size: 10px;
+      }
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .page-btn {
+        display: grid;
+        place-items: center;
+        min-width: 27px;
+        height: 27px;
+        padding: 0 6px;
+        border: 1px solid #e6ebe8;
+        border-radius: 7px;
+        color: #718078;
+        background: #fff;
+        font:
+          600 10px Arial,
+          sans-serif;
+      }
+      .page-btn:hover:not(:disabled),
+      .page-btn.current {
+        border-color: #c8dfd1;
+        color: var(--green-dark);
+        background: #eff7f2;
+      }
+      .page-btn:disabled {
+        color: #c3cbc6;
+        cursor: default;
+      }
+      .footnote {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin: 15px 2px 0;
+        color: #8a968f;
+        font-size: 10px;
+        line-height: 1.7;
+      }
+      .footnote svg {
+        flex: 0 0 auto;
+        width: 15px;
+        height: 15px;
+        margin-top: 1px;
+        color: #c18a39;
+      }
+
+      @media (max-width: 1120px) {
+        .app {
+          grid-template-columns: 205px minmax(0, 1fr);
+        }
+        .metrics {
+          gap: 10px;
+        }
+        .metric {
+          padding: 14px;
+        }
+        .toolbar {
+          grid-template-columns: minmax(160px, 1.5fr) repeat(
+              3,
+              minmax(105px, 1fr)
+            );
+        }
+        .insights {
+          grid-template-columns: minmax(0, 1fr) minmax(265px, 0.8fr);
+        }
+      }
+      @media (max-width: 850px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: static;
+          height: auto;
+          padding: 12px 18px;
+          border-right: 0;
+          border-bottom: 1px solid #e6ece8;
+        }
+        .brand {
+          padding: 0 2px;
+        }
+        .sidebar .nav-label,
+        .sidebar .nav,
+        .sidebar-bottom {
+          display: none;
+        }
+        .main {
+          padding: 0 20px 30px;
+        }
+        .insights {
+          grid-template-columns: 1fr;
+        }
+        .side-panels {
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto;
+        }
+        .toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .search-wrap {
+          grid-column: span 2;
+        }
+      }
+      @media (max-width: 560px) {
+        .main {
+          padding: 0 13px 24px;
+        }
+        .topbar {
+          min-height: 58px;
+        }
+        .crumbs {
+          font-size: 10px;
+        }
+        .data-status {
+          font-size: 0;
+        }
+        .status-dot {
+          margin-right: 2px;
+        }
+        .import-button {
+          min-height: 33px;
+          padding: 0 9px;
+          font-size: 10px;
+        }
+        .page-head {
+          display: block;
+          padding: 23px 0 18px;
+        }
+        .demo-badge {
+          margin-top: 12px;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .metric-value {
+          font-size: 26px;
+        }
+        .side-panels {
+          grid-template-columns: 1fr;
+        }
+        .category-chart {
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .form-chart {
+          grid-template-columns: minmax(112px, 0.85fr) minmax(0, 1.15fr);
+          gap: 8px;
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .donut-chart svg {
+          height: 165px;
+        }
+        .toolbar {
+          grid-template-columns: 1fr 1fr;
+          padding-right: 12px;
+          padding-left: 12px;
+        }
+        .catalog-head,
+        .panel-head {
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .table-footer {
+          align-items: flex-start;
+          flex-direction: column;
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .pagination {
+          align-self: flex-end;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      @media (pointer: coarse) {
+        .bar-chart-row,
+        .donut-legend-row {
+          min-height: 44px;
+        }
+      }
+
+      /* BMW M-inspired visual system */
+      :root {
+        color-scheme: dark;
+        --ink: #ffffff;
+        --muted: #7e7e7e;
+        --green: #1c69d4;
+        --green-dark: #ffffff;
+        --green-light: #262626;
+        --line: #3c3c3c;
+        --paper: #1a1a1a;
+        --canvas: #000000;
+        --amber: #f4b400;
+        --amber-soft: #1a1a1a;
+        --shadow: none;
+      }
+      body {
+        min-width: 0;
+        color: #ffffff;
+        font-family: Inter, "IBM Plex Sans Thai", "Leelawadee UI", Tahoma,
+          sans-serif;
+        background: #000000;
+      }
+      .app {
+        grid-template-columns: minmax(0, 1fr);
+        background: #000000;
+      }
+      .sidebar {
+        position: sticky;
+        z-index: 20;
+        top: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        width: 100%;
+        height: 64px;
+        padding: 0 clamp(18px, 4vw, 64px);
+        border: 0;
+        border-bottom: 1px solid #262626;
+        background: #000000;
+      }
+      .brand {
+        flex: 0 0 auto;
+        gap: 12px;
+        padding: 0;
+        color: #ffffff;
+      }
+      .brand-mark {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        width: 36px;
+        height: 38px;
+        border-radius: 0;
+        color: #ffffff;
+        background: transparent;
+        box-shadow: none;
+      }
+      .brand-mark strong {
+        font: 700 24px/0.95 Inter, "IBM Plex Sans Thai", sans-serif;
+        letter-spacing: -1px;
+      }
+      .brand-mark-stripe {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        width: 34px;
+        height: 4px;
+        margin-top: 4px;
+      }
+      .brand-mark-stripe span:nth-child(1),
+      .m-stripe span:nth-child(1) {
+        background: #0066b1;
+      }
+      .brand-mark-stripe span:nth-child(2),
+      .m-stripe span:nth-child(2) {
+        background: #1c69d4;
+      }
+      .brand-mark-stripe span:nth-child(3),
+      .m-stripe span:nth-child(3) {
+        background: #e22718;
+      }
+      .brand-text {
+        gap: 3px;
+        color: #ffffff;
+        font: 700 13px/1.1 Inter, "IBM Plex Sans Thai", sans-serif;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+      }
+      .brand-text small {
+        color: #7e7e7e;
+        font: 400 9px/1.4 Inter, "IBM Plex Sans Thai", sans-serif;
+        letter-spacing: 1.6px;
+      }
+      .nav-label,
+      .sidebar-bottom {
+        display: none;
+      }
+      .nav {
+        display: flex;
+        align-items: stretch;
+        gap: 30px;
+        margin-left: auto;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 64px;
+        padding: 0 3px;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        color: #7e7e7e;
+        font: 400 13px/1.4 Inter, "IBM Plex Sans Thai", sans-serif;
+        letter-spacing: 0.7px;
+        text-decoration: none;
+        transition: color 0.18s ease, border-color 0.18s ease;
+      }
+      .nav-link svg {
+        display: none;
+      }
+      .nav-link:hover {
+        color: #ffffff;
+        background: transparent;
+      }
+      .nav-link.active {
+        border-bottom-color: #ffffff;
+        border-radius: 0;
+        color: #ffffff;
+        background: transparent;
+        font-weight: 700;
+      }
+      .nav-count {
+        margin-left: 5px;
+        padding: 2px 5px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #bbbbbb;
+        background: transparent;
+        font: 400 10px Arial, sans-serif;
+      }
+      .main {
+        width: 100%;
+        max-width: 1440px;
+        min-width: 0;
+        margin: 0 auto;
+        padding: 0 clamp(18px, 4vw, 64px) 48px;
+      }
+      .topbar {
+        min-height: 64px;
+        border-bottom: 1px solid #262626;
+      }
+      .crumbs {
+        gap: 10px;
+        color: #7e7e7e;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+      }
+      .crumbs strong {
+        color: #e6e6e6;
+        font-weight: 400;
+        letter-spacing: 1px;
+      }
+      .top-actions {
+        gap: 16px;
+      }
+      .data-status {
+        color: #bbbbbb;
+        font-size: 11px;
+        letter-spacing: 0.2px;
+      }
+      .status-dot {
+        background: #7e7e7e;
+      }
+      .status-dot.ready {
+        background: #0fa336;
+        box-shadow: none;
+      }
+      .import-button {
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid #ffffff;
+        border-radius: 0;
+        color: #ffffff;
+        background: #000000;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        transition: color 0.18s ease, background-color 0.18s ease;
+      }
+      .import-button:hover {
+        border-color: #ffffff;
+        color: #000000;
+        background: #ffffff;
+      }
+      .import-input:focus-visible + .import-button {
+        outline: 2px solid #ffffff;
+        outline-offset: 3px;
+      }
+      .page-head {
+        align-items: flex-end;
+        padding: 42px 0 32px;
+        border-bottom: 1px solid #262626;
+      }
+      .page-kicker {
+        margin-bottom: 0;
+        color: #bbbbbb;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+      }
+      .m-stripe {
+        display: flex;
+        width: 48px;
+        height: 4px;
+        margin: 14px 0 18px;
+      }
+      .m-stripe span {
+        flex: 1 1 0;
+      }
+      h1 {
+        color: #ffffff;
+        font-family: Inter, "IBM Plex Sans Thai", sans-serif;
+        font-size: clamp(34px, 5vw, 56px);
+        font-weight: 700;
+        letter-spacing: 0;
+        line-height: 1.05;
+        text-transform: uppercase;
+      }
+      .page-subtitle {
+        margin-top: 12px;
+        color: #bbbbbb;
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+      .demo-badge {
+        padding: 10px 12px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #e6e6e6;
+        background: #0d0d0d;
+        font-size: 11px;
+        font-weight: 400;
+      }
+      .load-notice {
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #f4b400;
+        background: #1a1a1a;
+        font-size: 12px;
+      }
+      .metrics {
+        gap: 1px;
+        padding: 1px;
+        background: #3c3c3c;
+      }
+      .metric {
+        min-height: 150px;
+        padding: 22px 22px 20px;
+        border: 0;
+        border-radius: 0;
+        background: #0d0d0d;
+        box-shadow: none;
+      }
+      .metric-label {
+        color: #bbbbbb;
+        font-size: 12px;
+        font-weight: 300;
+      }
+      .metric-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 0;
+        color: #ffffff;
+        background: #262626;
+      }
+      .metric-value {
+        margin-top: 18px;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .metric-value small {
+        color: #7e7e7e;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .metric-foot {
+        margin-top: 9px;
+        color: #7e7e7e;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .insights {
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .panel,
+      .catalog {
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        background: #1a1a1a;
+        box-shadow: none;
+      }
+      .panel-head,
+      .catalog-head {
+        padding: 22px 24px 16px;
+      }
+      .panel-title {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .panel-subtitle {
+        margin-top: 6px;
+        color: #bbbbbb;
+        font-size: 12px;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+      .panel-chip {
+        padding: 6px 9px;
+        border-radius: 0;
+        color: #e6e6e6;
+        background: #262626;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+      }
+      .category-chart {
+        gap: 9px;
+        padding: 2px 24px 22px;
+      }
+      .bar-chart-row {
+        min-height: 42px;
+      }
+      .bar-chart-row[aria-pressed] {
+        cursor: pointer;
+      }
+      .bar-label {
+        color: #bbbbbb;
+        font-size: 12px;
+        font-weight: 300;
+      }
+      .bar-count {
+        color: #e6e6e6;
+        font-size: 11px;
+        font-weight: 500;
+      }
+      .bar-track {
+        height: 6px;
+        border-radius: 0;
+        background: #262626;
+      }
+      .bar-fill {
+        border-radius: 0;
+        background: #e6e6e6;
+      }
+      .bar-chart-row.is-selected .bar-fill {
+        background: #1c69d4;
+      }
+      .chart-empty {
+        color: #7e7e7e;
+        font-size: 12px;
+      }
+      .side-panels {
+        gap: 16px;
+      }
+      .form-chart {
+        padding: 0 20px 20px;
+      }
+      .donut-total {
+        fill: #ffffff;
+      }
+      .donut-caption {
+        fill: #7e7e7e;
+        font-size: 10px;
+      }
+      .donut-legend-row[aria-pressed] {
+        cursor: pointer;
+      }
+      .donut-legend-name {
+        color: #bbbbbb;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .donut-legend-value {
+        color: #7e7e7e;
+        font-size: 10px;
+        font-weight: 400;
+      }
+      .threshold-panel {
+        padding: 22px 24px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #ffffff;
+        background: #0d0d0d;
+        box-shadow: none;
+      }
+      .threshold-title {
+        color: #bbbbbb;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .threshold-number {
+        margin: 16px 0 8px;
+        color: #ffffff;
+        font-size: 36px;
+        letter-spacing: 0;
+      }
+      .threshold-number small {
+        color: #7e7e7e;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .threshold-note,
+      .threshold-range {
+        color: #7e7e7e;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .threshold-range {
+        border-top-color: #3c3c3c;
+      }
+      .threshold-range strong {
+        color: #e6e6e6;
+        font-size: 11px;
+      }
+      .catalog {
+        margin-top: 24px;
+        overflow: hidden;
+      }
+      .catalog-head {
+        padding-bottom: 18px;
+      }
+      .catalog-count {
+        padding: 6px 9px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #bbbbbb;
+        background: transparent;
+        font-size: 11px;
+      }
+      .toolbar {
+        gap: 10px;
+        padding: 0 24px 20px;
+      }
+      .search-wrap svg {
+        color: #7e7e7e;
+      }
+      .control {
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #ffffff;
+        background: #1a1a1a;
+        font-size: 13px;
+        font-weight: 300;
+      }
+      .control:focus {
+        border-color: #ffffff;
+        box-shadow: none;
+      }
+      .control::placeholder {
+        color: #7e7e7e;
+      }
+      .table-scroll {
+        border-top: 1px solid #3c3c3c;
+      }
+      thead {
+        background: #0d0d0d;
+      }
+      th {
+        padding: 13px 12px;
+        color: #7e7e7e;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 13px 12px;
+        border-top-color: #262626;
+        color: #bbbbbb;
+        font-size: 12px;
+        font-weight: 300;
+      }
+      tbody tr:hover {
+        background: #262626;
+      }
+      .sku,
+      .atc {
+        color: #e6e6e6;
+      }
+      .drug-name {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .drug-strength {
+        color: #7e7e7e;
+      }
+      .category-tag {
+        border-radius: 0;
+        color: #e6e6e6;
+        background: #262626;
+      }
+      .reorder {
+        color: #ffffff;
+      }
+      .empty-state {
+        color: #7e7e7e;
+      }
+      .table-footer {
+        border-top: 1px solid #3c3c3c;
+        color: #7e7e7e;
+      }
+      .page-btn {
+        min-width: 36px;
+        height: 36px;
+        border: 1px solid #3c3c3c;
+        border-radius: 0;
+        color: #bbbbbb;
+        background: #000000;
+      }
+      .page-btn:hover:not(:disabled),
+      .page-btn.current {
+        border-color: #ffffff;
+        color: #000000;
+        background: #ffffff;
+      }
+      .page-btn:disabled {
+        color: #555555;
+      }
+      .footnote {
+        margin-top: 20px;
+        color: #7e7e7e;
+        font-size: 11px;
+        font-weight: 300;
+      }
+      .footnote svg {
+        color: #f4b400;
+      }
+
+      @media (max-width: 1120px) {
+        .insights {
+          grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        }
+      }
+      @media (max-width: 850px) {
+        .sidebar {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0;
+          height: auto;
+          padding: 0 18px;
+        }
+        .brand {
+          min-height: 58px;
+          padding: 0;
+        }
+        .sidebar .nav {
+          display: flex;
+          justify-content: flex-start;
+          gap: 20px;
+          overflow-x: auto;
+        }
+        .nav-link {
+          min-height: 44px;
+          flex: 0 0 auto;
+        }
+        .main {
+          padding-right: 20px;
+          padding-left: 20px;
+        }
+        .insights {
+          grid-template-columns: 1fr;
+        }
+        .side-panels {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-rows: auto;
+        }
+      }
+      @media (max-width: 560px) {
+        .main {
+          padding: 0 13px 28px;
+        }
+        .topbar {
+          min-height: 58px;
+          gap: 8px;
+        }
+        .crumbs > span,
+        .crumbs > svg {
+          display: none;
+        }
+        .crumbs {
+          font-size: 10px;
+        }
+        .top-actions {
+          gap: 10px;
+        }
+        .data-status {
+          font-size: 0;
+        }
+        .status-dot {
+          margin-right: 2px;
+        }
+        .import-button {
+          min-height: 44px;
+          padding: 0 10px;
+          font-size: 10px;
+          letter-spacing: 0.8px;
+        }
+        .page-head {
+          display: block;
+          padding: 30px 0 25px;
+        }
+        .demo-badge {
+          margin-top: 16px;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .metric {
+          min-height: 130px;
+          padding: 16px;
+        }
+        .metric-value {
+          font-size: 28px;
+        }
+        .side-panels {
+          grid-template-columns: 1fr;
+        }
+        .panel-head,
+        .catalog-head {
+          padding-right: 16px;
+          padding-left: 16px;
+        }
+        .category-chart {
+          padding-right: 16px;
+          padding-left: 16px;
+        }
+        .form-chart {
+          grid-template-columns: minmax(112px, 0.85fr) minmax(0, 1.15fr);
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          padding-right: 13px;
+          padding-left: 13px;
+        }
+        .search-wrap {
+          grid-column: span 2;
+        }
+        .table-footer {
+          align-items: flex-start;
+          flex-direction: column;
+          padding-right: 16px;
+          padding-left: 16px;
+        }
+        .pagination {
+          align-self: flex-end;
+        }
+      }
+      @media (pointer: coarse) {
+        .import-button,
+        .nav-link,
+        .page-btn {
+          min-height: 44px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="sidebar top-nav" aria-label="เมนูหลัก">
+        <a class="brand" href="#overview">
+          <span class="brand-mark" aria-hidden="true">
+            <strong>M</strong>
+            <span class="brand-mark-stripe"><span></span><span></span><span></span></span>
+          </span>
+          <span class="brand-text">Medstock<small>DRUG CATALOG</small></span>
+        </a>
+        <p class="nav-label">WORKSPACE</p>
+        <nav class="nav">
+          <a class="nav-link active" href="#overview" aria-current="page">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect
+                x="3"
+                y="3"
+                width="7"
+                height="8"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <rect
+                x="14"
+                y="3"
+                width="7"
+                height="5"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <rect
+                x="14"
+                y="12"
+                width="7"
+                height="9"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <rect
+                x="3"
+                y="15"
+                width="7"
+                height="6"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+            </svg>
+            OVERVIEW
+          </a>
+          <a class="nav-link" href="#catalog">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <path
+                d="M8 8h8M8 12h8M8 16h5"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+            CATALOG
+            <span class="nav-count" id="nav-count">—</span>
+          </a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="source-card">
+            <div class="source-heading">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="m12 3 9 5-9 5-9-5 9-5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="m3 12 9 5 9-5M3 16l9 5 9-5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linejoin="round"
+                /></svg
+              >ชุดข้อมูลที่ใช้อยู่
+            </div>
+            <p>
+              บัญชีรายการยาของร้านยาจำลอง<br />แหล่งข้อมูล JSON
+              ในโฟลเดอร์เดียวกัน
+            </p>
+          </div>
+          <p class="sidebar-foot">MEDSTOCK · CATALOG VIEW</p>
+        </div>
+      </header>
+
+      <main class="main" id="overview">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>MEDSTOCK</span
+            ><svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="m6 3 5 5-5 5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+            ><strong>CATALOG OVERVIEW</strong>
+          </div>
+          <div class="top-actions">
+            <span class="data-status"
+              ><i class="status-dot" id="status-dot"></i
+              ><span id="status-label">กำลังโหลดข้อมูล</span></span
+            >
+            <input
+              class="import-input"
+              id="json-file"
+              type="file"
+              accept=".json,application/json"
+            />
+            <label
+              class="import-button"
+              for="json-file"
+              role="button"
+              tabindex="0"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 15V4m0 0L8 8m4-4 4 4M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              IMPORT JSON
+            </label>
+          </div>
+        </header>
+
+        <section class="page-head">
+          <div>
+            <p class="page-kicker">PHARMACY · OVERVIEW</p>
+            <span class="m-stripe" aria-hidden="true"><span></span><span></span><span></span></span>
+            <h1>PHARMACY CATALOG</h1>
+            <p class="page-subtitle" id="page-subtitle">
+              สำรวจรายการยา หมวดหมู่ และรูปแบบยาในบัญชี
+            </p>
+          </div>
+          <span class="demo-badge"
+            ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 8v4m0 4h.01M10.3 3.9 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3l-7.6-13.1a2 2 0 0 0-3.4 0Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+            >ข้อมูลจำลอง · ไม่ใช่สต็อกคงเหลือ</span
+          >
+        </section>
+
+        <div class="load-notice" id="load-notice" role="status">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke="currentColor"
+              stroke-width="1.6"
+            />
+            <path
+              d="M12 11v5m0-8h.01"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span id="load-notice-text"
+            >ยังโหลดข้อมูลไม่ได้ กด “นำเข้า JSON” แล้วเลือกไฟล์ drugs.json</span
+          >
+        </div>
+
+        <section class="metrics" aria-label="ตัวชี้วัดภาพรวม">
+          <article class="metric">
+            <div class="metric-top">
+              <span class="metric-label">รายการยา</span
+              ><span class="metric-icon"
+                ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M7.8 4.4a4.8 4.8 0 0 1 6.8 0l5 5a4.8 4.8 0 0 1-6.8 6.8l-5-5a4.8 4.8 0 0 1 0-6.8Z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                  <path
+                    d="m9 13 6-6"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="m4 14-1 1a4.8 4.8 0 0 0 6.8 6.8l1.1-1.1"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  /></svg
+              ></span>
+            </div>
+            <div class="metric-value">
+              <span id="metric-items">—</span><small>SKU</small>
+            </div>
+            <div class="metric-foot">จำนวนรายการในบัญชี</div>
+          </article>
+          <article class="metric">
+            <div class="metric-top">
+              <span class="metric-label">หมวดหมู่ยา</span
+              ><span class="metric-icon"
+                ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 5h16v4H4zM4 11h7v8H4zM13 11h7v3h-7zM13 16h7v3h-7z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  /></svg
+              ></span>
+            </div>
+            <div class="metric-value">
+              <span id="metric-categories">—</span><small>หมวด</small>
+            </div>
+            <div class="metric-foot">จัดกลุ่มตามประเภทการใช้งาน</div>
+          </article>
+          <article class="metric">
+            <div class="metric-top">
+              <span class="metric-label">รูปแบบยา</span
+              ><span class="metric-icon"
+                ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M7.8 4.4a4.8 4.8 0 0 1 6.8 0l5 5a4.8 4.8 0 0 1-6.8 6.8l-5-5a4.8 4.8 0 0 1 0-6.8Z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                  <path
+                    d="m9 13 6-6"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  /></svg
+              ></span>
+            </div>
+            <div class="metric-value">
+              <span id="metric-forms">—</span><small>รูปแบบ</small>
+            </div>
+            <div class="metric-foot">เช่น tablet, capsule, syrup</div>
+          </article>
+          <article class="metric">
+            <div class="metric-top">
+              <span class="metric-label">รหัส ATC</span
+              ><span class="metric-icon"
+                ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 3 20 6v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-3Z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="m8.5 12 2.2 2.2 4.8-4.8"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  /></svg
+              ></span>
+            </div>
+            <div class="metric-value">
+              <span id="metric-atc">—</span><small>ครบ</small>
+            </div>
+            <div class="metric-foot" id="metric-atc-foot">
+              ความครบถ้วนของข้อมูล ATC
+            </div>
+          </article>
+        </section>
+
+        <section class="insights" aria-label="สรุปข้อมูลยา">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">CATALOG BY CATEGORY</h2>
+                <p class="panel-subtitle">
+                  ภาพรวมข้อมูลทั้งหมด · เลือกหมวดเพื่อกรองรายการ
+                </p>
+              </div>
+              <span class="panel-chip" id="category-chip">14 หมวด</span>
+            </div>
+            <div
+              class="category-chart bar-chart"
+              id="category-chart"
+              role="group"
+              aria-label="แผนภูมิจำนวนรายการยาแยกตามหมวด"
+            ></div>
+          </article>
+
+          <div class="side-panels">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">DOSAGE FORM MIX</h2>
+                  <p class="panel-subtitle">
+                    5 อันดับแรกและรูปแบบอื่น · เลือกรูปแบบเพื่อกรองรายการ
+                  </p>
+                </div>
+              </div>
+              <div
+                class="form-chart donut-chart"
+                id="form-chart"
+                role="group"
+                aria-label="แผนภูมิรูปแบบยา"
+              ></div>
+            </article>
+            <article class="panel threshold-panel">
+              <h2 class="threshold-title">REORDER POLICY</h2>
+              <div class="threshold-number">
+                <span id="threshold-median">—</span
+                ><small>หน่วย · ค่ากลาง</small>
+              </div>
+              <p class="threshold-note">
+                ค่า reorder_level เป็นเกณฑ์ที่กำหนดไว้ ไม่ใช่จำนวนยาคงเหลือ
+              </p>
+              <div class="threshold-range">
+                <span>ต่ำสุด <strong id="threshold-min">—</strong></span
+                ><span>สูงสุด <strong id="threshold-max">—</strong></span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section
+          class="panel catalog"
+          id="catalog"
+          aria-labelledby="catalog-title"
+        >
+          <div class="catalog-head">
+            <div>
+              <h2 class="panel-title" id="catalog-title">MEDICINE CATALOG</h2>
+              <p class="panel-subtitle">ค้นหาและกรองข้อมูลจากบัญชียา</p>
+            </div>
+            <span class="catalog-count" id="result-count" aria-live="polite"
+              >กำลังโหลด…</span
+            >
+          </div>
+          <div class="toolbar">
+            <label class="search-wrap"
+              ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle
+                  cx="10.8"
+                  cy="10.8"
+                  r="6.8"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+                <path
+                  d="m16 16 4.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                /></svg
+              ><input
+                class="control"
+                id="search"
+                type="search"
+                placeholder="ค้นหาชื่อยา, SKU, ATC…"
+                aria-label="ค้นหารายการยา"
+            /></label>
+            <select
+              class="control"
+              id="category-filter"
+              aria-label="กรองตามหมวด"
+            >
+              <option value="">ทุกหมวดหมู่</option>
+            </select>
+            <select class="control" id="form-filter" aria-label="กรองตามรูปแบบ">
+              <option value="">ทุกรูปแบบยา</option>
+            </select>
+            <select class="control" id="sort-filter" aria-label="เรียงลำดับ">
+              <option value="name-asc">ชื่อยา: ก–ฮ</option>
+              <option value="reorder-desc">จุดสั่งซื้อ: มากไปน้อย</option>
+              <option value="reorder-asc">จุดสั่งซื้อ: น้อยไปมาก</option>
+            </select>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">SKU</th>
+                  <th scope="col">ชื่อสามัญ / ความแรง</th>
+                  <th scope="col">รูปแบบยา</th>
+                  <th scope="col">หน่วย</th>
+                  <th scope="col">หมวดหมู่</th>
+                  <th scope="col">รหัส ATC</th>
+                  <th
+                    scope="col"
+                    style="text-align: right; padding-right: 18px"
+                  >
+                    จุดสั่งซื้อ
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="drug-rows"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state">
+              ไม่พบรายการที่ตรงกับคำค้นหาหรือตัวกรอง
+            </div>
+          </div>
+          <footer class="table-footer">
+            <span id="page-summary">—</span>
+            <nav
+              class="pagination"
+              id="pagination"
+              aria-label="แบ่งหน้ารายการยา"
+            ></nav>
+          </footer>
+        </section>
+
+        <p class="footnote">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 8v4m0 4h.01M10.3 3.9 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3l-7.6-13.1a2 2 0 0 0-3.4 0Z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            /></svg
+          ><span id="source-note"
+            >Dashboard นี้สรุปข้อมูลบัญชียา ไม่ใช่ระบบบันทึกสต็อก
+            ไม่มีข้อมูลจำนวนคงเหลือ วันหมดอายุ หรือยอดการใช้ยา</span
+          >
+        </p>
+      </main>
+    </div>
+
+    <script>
+      const state = {
+        items: [],
+        page: 1,
+        pageSize: 12,
+        query: "",
+        category: "",
+        form: "",
+        sort: "name-asc",
+      };
+      const $ = (selector) => document.querySelector(selector);
+      const html = (value) =>
+        String(value ?? "").replace(
+          /[&<>"']/g,
+          (character) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[character],
+        );
+      const formLabels = {
+        tablet: "ยาเม็ด",
+        capsule: "แคปซูล",
+        cream: "ครีม",
+        syrup: "ยาน้ำเชื่อม",
+        inhaler: "ยาสูดพ่น",
+        "eye drops": "ยาหยอดตา",
+        "powder for oral solution": "ผงชงรับประทาน",
+        solution: "สารละลาย",
+        "nasal spray": "ยาพ่นจมูก",
+        "ear drops": "ยาหยอดหู",
+        ointment: "ขี้ผึ้ง",
+        "dry syrup": "ยาผงแห้ง",
+        gel: "เจล",
+        suspension: "ยาน้ำแขวนตะกอน",
+        "oral suspension": "ยาน้ำแขวนตะกอนชนิดรับประทาน",
+        "oral solution": "ยาสารละลายชนิดรับประทาน",
+        "chewable tablet": "ยาเม็ดเคี้ยว",
+        "sublingual tablet": "ยาเม็ดอมใต้ลิ้น",
+      };
+      const unitLabels = {
+        tablet: "เม็ด",
+        capsule: "แคปซูล",
+        bottle: "ขวด",
+        tube: "หลอด",
+        inhaler: "เครื่อง",
+        sachet: "ซอง",
+      };
+
+      function setDataStatus(ready, label) {
+        $("#status-dot").classList.toggle("ready", ready);
+        $("#status-label").textContent = label;
+      }
+
+      function validateData(data) {
+        if (!data || !Array.isArray(data.items))
+          throw new Error("ไฟล์นี้ไม่มีรายการ items ที่ถูกต้อง");
+        const requiredStrings = [
+          "sku",
+          "generic_name",
+          "strength",
+          "dosage_form",
+          "unit",
+          "category",
+          "atc_code",
+        ];
+        const seenSkus = new Set();
+        const items = data.items.map((item, index) => {
+          const rowNumber = index + 1;
+          if (!item || typeof item !== "object" || Array.isArray(item))
+            throw new Error(`รายการที่ ${rowNumber} ต้องเป็น object`);
+          for (const key of requiredStrings) {
+            if (typeof item[key] !== "string")
+              throw new Error(`รายการที่ ${rowNumber}: ${key} ต้องเป็นข้อความ`);
+            if (key !== "atc_code" && !item[key].trim())
+              throw new Error(`รายการที่ ${rowNumber}: ${key} ห้ามเว้นว่าง`);
+          }
+          const sku = item.sku.trim();
+          const normalizedSku = sku.toLocaleLowerCase();
+          if (seenSkus.has(normalizedSku))
+            throw new Error(`พบ SKU ซ้ำ: ${sku}`);
+          seenSkus.add(normalizedSku);
+
+          if (
+            (typeof item.reorder_level !== "number" &&
+              typeof item.reorder_level !== "string") ||
+            (typeof item.reorder_level === "string" &&
+              !item.reorder_level.trim())
+          )
+            throw new Error(`รายการที่ ${rowNumber}: reorder_level ต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป`);
+          const reorderLevel = Number(item.reorder_level);
+          if (!Number.isFinite(reorderLevel) || reorderLevel < 0)
+            throw new Error(`รายการที่ ${rowNumber}: reorder_level ต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป`);
+
+          return {
+            ...item,
+            sku,
+            generic_name: item.generic_name.trim(),
+            strength: item.strength.trim(),
+            dosage_form: item.dosage_form.trim(),
+            unit: item.unit.trim(),
+            category: item.category.trim(),
+            atc_code: item.atc_code.trim(),
+            reorder_level: reorderLevel,
+          };
+        });
+        return { ...data, items };
+      }
+
+      function loadData(data, sourceLabel) {
+        const payload = validateData(data);
+        state.items = payload.items;
+        state.page = 1;
+        state.query = "";
+        state.category = "";
+        state.form = "";
+        state.sort = "name-asc";
+        $("#search").value = "";
+        $("#category-filter").value = "";
+        $("#form-filter").value = "";
+        $("#sort-filter").value = "name-asc";
+        $("#load-notice").classList.remove("show");
+        $("#page-subtitle").textContent =
+          payload.meta?.title || "สำรวจรายการยา หมวดหมู่ และรูปแบบยาในบัญชี";
+        const sourceNote =
+          "Dashboard นี้สรุปข้อมูลบัญชียา ไม่ใช่ระบบบันทึกสต็อก ไม่มีข้อมูลจำนวนคงเหลือ วันหมดอายุ หรือยอดการใช้ยา";
+        $("#source-note").textContent = payload.meta?.note
+          ? `${payload.meta.note} · ${sourceNote}`
+          : sourceNote;
+        setDataStatus(true, sourceLabel);
+        renderDashboard();
+      }
+
+      function median(values) {
+        if (!values.length) return 0;
+        const sorted = [...values].sort((a, b) => a - b);
+        const middle = Math.floor(sorted.length / 2);
+        return sorted.length % 2
+          ? sorted[middle]
+          : (sorted[middle - 1] + sorted[middle]) / 2;
+      }
+
+      function renderMetrics() {
+        const categories = new Set(
+          state.items.map((item) => item.category).filter(Boolean),
+        );
+        const forms = new Set(
+          state.items.map((item) => item.dosage_form).filter(Boolean),
+        );
+        const atcCount = state.items.filter((item) =>
+          String(item.atc_code || "").trim(),
+        ).length;
+        const atcPercent = state.items.length
+          ? Math.round((atcCount / state.items.length) * 100)
+          : 0;
+        const reorder = state.items
+          .map((item) => Number(item.reorder_level))
+          .filter(Number.isFinite);
+        $("#metric-items").textContent =
+          state.items.length.toLocaleString("th-TH");
+        $("#metric-categories").textContent =
+          categories.size.toLocaleString("th-TH");
+        $("#metric-forms").textContent = forms.size.toLocaleString("th-TH");
+        $("#metric-atc").textContent = `${atcPercent}%`;
+        $("#metric-atc-foot").textContent =
+          `${atcCount.toLocaleString("th-TH")} จาก ${state.items.length.toLocaleString("th-TH")} รายการ`;
+        $("#nav-count").textContent =
+          state.items.length.toLocaleString("th-TH");
+        $("#category-chip").textContent = `${categories.size} หมวด`;
+        $("#threshold-median").textContent =
+          median(reorder).toLocaleString("th-TH");
+        $("#threshold-min").textContent = reorder.length
+          ? Math.min(...reorder).toLocaleString("th-TH")
+          : "—";
+        $("#threshold-max").textContent = reorder.length
+          ? Math.max(...reorder).toLocaleString("th-TH")
+          : "—";
+      }
+
+      function renderBarChart() {
+        const counts = new Map();
+        state.items.forEach((item) => {
+          const category = item.category;
+          counts.set(category, (counts.get(category) || 0) + 1);
+        });
+        const entries = [...counts.entries()].sort(
+          (a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "th"),
+        );
+        const host = $("#category-chart");
+        host.replaceChildren();
+        if (!entries.length) {
+          const empty = document.createElement("p");
+          empty.className = "chart-empty";
+          empty.textContent = "ยังไม่มีข้อมูลหมวดหมู่";
+          host.append(empty);
+          return;
+        }
+
+        let visible = entries.slice(0, 8);
+        const selected = entries.find(([category]) => category === state.category);
+        if (selected && !visible.some(([category]) => category === state.category))
+          visible = [...entries.slice(0, 7), selected].sort(
+            (a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "th"),
+          );
+        const visibleCategories = new Set(visible.map(([category]) => category));
+        const hidden = entries.filter(([category]) => !visibleCategories.has(category));
+        const maximum = Math.max(1, ...visible.map(([, count]) => count));
+
+        const appendRow = (category, count, filterValue = null) => {
+          const row = document.createElement(filterValue === null ? "div" : "button");
+          row.className = "bar-chart-row";
+          if (filterValue !== null) {
+            row.type = "button";
+            row.dataset.category = filterValue;
+            const isSelected = state.category === filterValue;
+            row.setAttribute("aria-pressed", String(isSelected));
+            row.setAttribute(
+              "aria-label",
+              `${category}, ${count.toLocaleString("th-TH")} รายการ${isSelected ? ", กำลังกรองอยู่" : ", กดเพื่อกรองตาราง"}`,
+            );
+            if (isSelected) row.classList.add("is-selected");
+            row.addEventListener("click", () => applyChartFilter("category", filterValue));
+          } else {
+            row.setAttribute("aria-label", `${category}, ${count.toLocaleString("th-TH")} รายการ`);
+          }
+
+          const meta = document.createElement("span");
+          meta.className = "bar-chart-meta";
+          const label = document.createElement("span");
+          label.className = "bar-label";
+          label.textContent = category;
+          const value = document.createElement("strong");
+          value.className = "bar-count";
+          value.textContent = `${count.toLocaleString("th-TH")} รายการ`;
+          meta.append(label, value);
+
+          const track = document.createElement("span");
+          track.className = "bar-track";
+          track.setAttribute("aria-hidden", "true");
+          const fill = document.createElement("span");
+          fill.className = "bar-fill";
+          fill.style.width = `${(count / maximum) * 100}%`;
+          track.append(fill);
+          row.append(meta, track);
+          host.append(row);
+        };
+
+        visible.forEach(([category, count]) =>
+          appendRow(category, count, category),
+        );
+        if (hidden.length) {
+          const otherCount = hidden.reduce((sum, [, count]) => sum + count, 0);
+          appendRow(`หมวดอื่น ๆ (${hidden.length} หมวด)`, otherCount);
+        }
+      }
+
+      function renderDonutChart() {
+        const counts = new Map();
+        state.items.forEach((item) => {
+          const form = item.dosage_form;
+          counts.set(form, (counts.get(form) || 0) + 1);
+        });
+        const entries = [...counts.entries()].sort(
+          (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+        );
+        const host = $("#form-chart");
+        host.replaceChildren();
+        if (!entries.length) {
+          const empty = document.createElement("p");
+          empty.className = "chart-empty";
+          empty.textContent = "ยังไม่มีข้อมูลรูปแบบยา";
+          host.append(empty);
+          return;
+        }
+
+        let visible = entries.slice(0, 5);
+        const selected = entries.find(([form]) => form === state.form);
+        if (selected && !visible.some(([form]) => form === state.form))
+          visible = [...entries.slice(0, 4), selected].sort(
+            (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+          );
+        const visibleForms = new Set(visible.map(([form]) => form));
+        const hidden = entries.filter(([form]) => !visibleForms.has(form));
+        const total = entries.reduce((sum, [, count]) => sum + count, 0);
+        const segments = visible.map(([form, count]) => ({
+          form,
+          label: formLabels[form] || form,
+          count,
+          filterValue: form,
+        }));
+        if (hidden.length) {
+          segments.push({
+            form: null,
+            label: `รูปแบบอื่น ๆ (${hidden.length} รูปแบบ)`,
+            count: hidden.reduce((sum, [, count]) => sum + count, 0),
+            filterValue: null,
+          });
+        }
+        const colors = ["#ffffff", "#b7b7b7", "#929292", "#707070", "#4f4f4f", "#1c69d4"];
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 180 180");
+        svg.setAttribute("role", "img");
+        svg.setAttribute("aria-label", `กราฟโดนัทสัดส่วนรูปแบบยา รวม ${total.toLocaleString("th-TH")} รายการ`);
+        const radius = 52;
+        const circumference = 2 * Math.PI * radius;
+        let offset = 0;
+        segments.forEach(({ count }, index) => {
+          const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          ring.setAttribute("cx", 90);
+          ring.setAttribute("cy", 90);
+          ring.setAttribute("r", radius);
+          ring.setAttribute("class", "donut-ring");
+          ring.setAttribute("stroke", colors[index % colors.length]);
+          ring.setAttribute("stroke-dasharray", `${(count / total) * circumference} ${circumference}`);
+          ring.setAttribute("stroke-dashoffset", `${-offset}`);
+          ring.setAttribute("aria-hidden", "true");
+          svg.append(ring);
+          offset += (count / total) * circumference;
+        });
+        const totalText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        totalText.setAttribute("x", 90);
+        totalText.setAttribute("y", 88);
+        totalText.setAttribute("class", "donut-total");
+        totalText.textContent = total.toLocaleString("th-TH");
+        svg.append(totalText);
+        const caption = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        caption.setAttribute("x", 90);
+        caption.setAttribute("y", 106);
+        caption.setAttribute("class", "donut-caption");
+        caption.textContent = "รายการทั้งหมด";
+        svg.append(caption);
+        const legend = document.createElement("div");
+        legend.className = "donut-legend";
+        segments.forEach(({ label, count, filterValue }, index) => {
+          const row = document.createElement(filterValue === null ? "div" : "button");
+          row.className = "donut-legend-row";
+          if (filterValue !== null) {
+            row.type = "button";
+            row.dataset.form = filterValue;
+            const isSelected = state.form === filterValue;
+            row.setAttribute("aria-pressed", String(isSelected));
+            row.setAttribute(
+              "aria-label",
+              `${label}, ${count.toLocaleString("th-TH")} รายการ, ${Math.round((count / total) * 100)} เปอร์เซ็นต์${isSelected ? ", กำลังกรองอยู่" : ", กดเพื่อกรองตาราง"}`,
+            );
+            if (isSelected) row.classList.add("is-selected");
+            row.addEventListener("click", () => applyChartFilter("form", filterValue));
+          } else {
+            row.setAttribute(
+              "aria-label",
+              `${label}, ${count.toLocaleString("th-TH")} รายการ, ${Math.round((count / total) * 100)} เปอร์เซ็นต์`,
+            );
+          }
+          const swatch = document.createElement("span");
+          swatch.className = "donut-legend-swatch";
+          swatch.style.background = colors[index % colors.length];
+          const name = document.createElement("span");
+          name.className = "donut-legend-name";
+          name.textContent = label;
+          const copy = document.createElement("span");
+          copy.className = "donut-legend-copy";
+          const value = document.createElement("span");
+          value.className = "donut-legend-value";
+          value.textContent = `${count.toLocaleString("th-TH")} รายการ · ${Math.round((count / total) * 100)}%`;
+          copy.append(name, value);
+          row.append(swatch, copy);
+          legend.append(row);
+        });
+        host.append(svg, legend);
+      }
+
+      function applyChartFilter(type, value) {
+        const isSelected = state[type] === value;
+        state.query = "";
+        state.category = type === "category" && !isSelected ? value : "";
+        state.form = type === "form" && !isSelected ? value : "";
+        state.page = 1;
+        $("#search").value = "";
+        $("#category-filter").value = state.category;
+        $("#form-filter").value = state.form;
+
+        document.querySelectorAll("#category-chart [data-category]").forEach((button) => {
+          const selected = button.dataset.category === state.category;
+          button.classList.toggle("is-selected", selected);
+          button.setAttribute("aria-pressed", String(selected));
+        });
+        document.querySelectorAll("#form-chart [data-form]").forEach((button) => {
+          const selected = button.dataset.form === state.form;
+          button.classList.toggle("is-selected", selected);
+          button.setAttribute("aria-pressed", String(selected));
+        });
+
+        renderTable();
+        $("#catalog").scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+          block: "start",
+        });
+      }
+
+      function populateFilters() {
+        const categorySelect = $("#category-filter");
+        const formSelect = $("#form-filter");
+        const currentCategory = state.category;
+        const currentForm = state.form;
+        categorySelect.replaceChildren(new Option("ทุกหมวดหมู่", ""));
+        formSelect.replaceChildren(new Option("ทุกรูปแบบยา", ""));
+        [...new Set(state.items.map((item) => item.category).filter(Boolean))]
+          .sort((a, b) => a.localeCompare(b, "th"))
+          .forEach((value) => categorySelect.add(new Option(value, value)));
+        [
+          ...new Set(
+            state.items.map((item) => item.dosage_form).filter(Boolean),
+          ),
+        ]
+          .sort((a, b) => String(a).localeCompare(String(b)))
+          .forEach((value) =>
+            formSelect.add(new Option(formLabels[value] || value, value)),
+          );
+        categorySelect.value = currentCategory;
+        formSelect.value = currentForm;
+      }
+
+      function getFilteredItems() {
+        const query = state.query.trim().toLocaleLowerCase();
+        const filtered = state.items.filter((item) => {
+          const searchable = [
+            item.sku,
+            item.generic_name,
+            item.strength,
+            item.dosage_form,
+            item.unit,
+            item.category,
+            item.atc_code,
+          ]
+            .join(" ")
+            .toLocaleLowerCase();
+          return (
+            (!query || searchable.includes(query)) &&
+            (!state.category || item.category === state.category) &&
+            (!state.form || item.dosage_form === state.form)
+          );
+        });
+        if (state.sort === "reorder-desc")
+          filtered.sort(
+            (a, b) => Number(b.reorder_level) - Number(a.reorder_level),
+          );
+        else if (state.sort === "reorder-asc")
+          filtered.sort(
+            (a, b) => Number(a.reorder_level) - Number(b.reorder_level),
+          );
+        else
+          filtered.sort(
+            (a, b) =>
+              String(a.generic_name).localeCompare(
+                String(b.generic_name),
+                "en",
+              ) || String(a.strength).localeCompare(String(b.strength), "en"),
+          );
+        return filtered;
+      }
+
+      function renderPagination(pageCount) {
+        const host = $("#pagination");
+        host.replaceChildren();
+        const makeButton = (
+          label,
+          page,
+          disabled = false,
+          current = false,
+          aria = "",
+        ) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `page-btn${current ? " current" : ""}`;
+          button.textContent = label;
+          button.disabled = disabled;
+          button.setAttribute("aria-label", aria || `หน้า ${label}`);
+          if (current) button.setAttribute("aria-current", "page");
+          button.addEventListener("click", () => {
+            state.page = page;
+            renderTable();
+          });
+          host.append(button);
+        };
+        makeButton(
+          "‹",
+          Math.max(1, state.page - 1),
+          state.page <= 1,
+          false,
+          "หน้าก่อนหน้า",
+        );
+        const start = Math.max(1, Math.min(state.page - 2, pageCount - 4));
+        const end = Math.min(pageCount, start + 4);
+        for (let page = start; page <= end; page++)
+          makeButton(String(page), page, false, page === state.page);
+        makeButton(
+          "›",
+          Math.min(pageCount, state.page + 1),
+          state.page >= pageCount,
+          false,
+          "หน้าถัดไป",
+        );
+      }
+
+      function renderTable() {
+        const rows = $("#drug-rows");
+        const filtered = getFilteredItems();
+        const pageCount = Math.max(
+          1,
+          Math.ceil(filtered.length / state.pageSize),
+        );
+        state.page = Math.min(state.page, pageCount);
+        const startIndex = (state.page - 1) * state.pageSize;
+        const pageItems = filtered.slice(
+          startIndex,
+          startIndex + state.pageSize,
+        );
+        rows.innerHTML = pageItems
+          .map(
+            (item) => `
+          <tr>
+            <td><span class="sku">${html(item.sku)}</span></td>
+            <td><span class="drug-name">${html(item.generic_name)}</span><span class="drug-strength">${html(item.strength)}</span></td>
+            <td>${html(formLabels[item.dosage_form] || item.dosage_form)}</td>
+            <td>${html(unitLabels[item.unit] || item.unit)}</td>
+            <td><span class="category-tag" title="${html(item.category)}">${html(item.category)}</span></td>
+            <td><span class="atc">${html(item.atc_code)}</span></td>
+            <td class="reorder">${Number(item.reorder_level).toLocaleString("th-TH")}</td>
+          </tr>`,
+          )
+          .join("");
+        $("#empty-state").style.display = filtered.length ? "none" : "block";
+        $("#result-count").textContent =
+          `${filtered.length.toLocaleString("th-TH")} รายการ`;
+        const from = filtered.length ? startIndex + 1 : 0;
+        const to = Math.min(startIndex + state.pageSize, filtered.length);
+        $("#page-summary").textContent =
+          `แสดง ${from.toLocaleString("th-TH")}–${to.toLocaleString("th-TH")} จาก ${filtered.length.toLocaleString("th-TH")} รายการ`;
+        renderPagination(pageCount);
+      }
+
+      function renderDashboard() {
+        renderMetrics();
+        renderBarChart();
+        renderDonutChart();
+        populateFilters();
+        renderTable();
+      }
+
+      $("#search").addEventListener("input", (event) => {
+        state.query = event.target.value;
+        state.page = 1;
+        renderTable();
+      });
+      $("#category-filter").addEventListener("change", (event) => {
+        state.category = event.target.value;
+        state.page = 1;
+        renderBarChart();
+        renderTable();
+      });
+      $("#form-filter").addEventListener("change", (event) => {
+        state.form = event.target.value;
+        state.page = 1;
+        renderDonutChart();
+        renderTable();
+      });
+      $("#sort-filter").addEventListener("change", (event) => {
+        state.sort = event.target.value;
+        state.page = 1;
+        renderTable();
+      });
+      $("#json-file").addEventListener("change", async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+          loadData(JSON.parse(await file.text()), `โหลด ${file.name} แล้ว`);
+        } catch (error) {
+          $("#load-notice-text").textContent =
+            `โหลดไฟล์ไม่สำเร็จ: ${error.message}`;
+          $("#load-notice").classList.add("show");
+          setDataStatus(false, "ไฟล์ไม่ถูกต้อง");
+        }
+        event.target.value = "";
+      });
+      $("#json-file").addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          $(".import-button").click();
+        }
+      });
+
+      async function start() {
+        if (location.protocol === "file:") {
+          $("#load-notice").classList.add("show");
+          $("#load-notice-text").textContent =
+            "เปิดไฟล์ HTML โดยตรงอยู่ เลือก “นำเข้า JSON” แล้วเลือกไฟล์ drugs.json เพื่อโหลดข้อมูล";
+          setDataStatus(false, "รอเลือกไฟล์ JSON");
+          return;
+        }
+        try {
+          const response = await fetch("./drugs.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          loadData(await response.json(), "เชื่อมต่อ drugs.json แล้ว");
+        } catch (error) {
+          $("#load-notice").classList.add("show");
+          $("#load-notice-text").textContent =
+            "โหลด drugs.json ไม่ได้ ตรวจว่าไฟล์อยู่โฟลเดอร์เดียวกับ dashboard.html หรือกด “นำเข้า JSON” เพื่อเลือกไฟล์ด้วยตนเอง";
+          setDataStatus(false, "ยังไม่พบ JSON");
+          $("#page-subtitle").textContent =
+            "ยังไม่มีข้อมูลแสดงผล · เลือกไฟล์ drugs.json เพื่อเริ่มต้น";
+        }
+      }
+      start();
+    </script>
+  </body>
+</html>
